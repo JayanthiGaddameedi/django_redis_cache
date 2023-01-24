@@ -37,17 +37,76 @@
        #  Cache time to live is 15 minutes
        CACHE_TTL = 60 * 15
        ```
-3. to check redis connected - `python3 manage.py shell`
-   1. $ `redis-cli ping`
-   2. then it should return `PONG`
-4. to test redis is working fine..!!
-    1. $ `redis-cli` --> it will return `127.0.0.1:6379>`
-    2. 127.0.0.1:6379> `set test "hey jayanthi"`
-    3.  then returns --> 127.0.0.1:6379>`OK`
-    4. 127.0.0.1:6379>`get test`
-    5.  then returns --> 127.0.0.1:6379>`hey jayanthi`
-5. to know about cache -- use the below commands in the shell
-   `python3 manage.py shell` this will open the shell for you.
-6. then to know the cache `from django.core.cache import cache`
-    1. to know the list of keys present in the cache `cache.keys('*')`
-    2. to clear the cache `cache.clear()`
+3. models.py
+    ```
+    class Newsfeed(models.Model):
+        news = models.CharField(max_length=255)
+   ```
+4. admin.py
+   ```
+   from .models import Newsfeed
+   
+   @admin.register(Newsfeed)
+   class NewsfeedAdmin(admin.ModelAdmin):
+   list_display = ('id', 'news')
+
+   ```
+5. views.py
+    ```
+    from django.conf import settings
+    from django.shortcuts import render
+    from rest_framework.decorators import api_view
+    from rest_framework import status
+    from rest_framework.response import Response
+    from django.views.decorators.cache import cache_page
+    from .models import Newsfeed
+    
+    @cache_page(settings.CACHE_TTL)
+    @api_view(['GET'])
+    def list_newsfeed(request):
+        all_newsfeeds = Newsfeed.objects.all()
+         data = []
+         for item in all_newsfeeds:
+              temp = {
+                 'news_id': item.id,
+                 'news': item.news
+              }
+              data.append(temp)
+         context = {'data': data}
+        return Response(context, status=status.HTTP_200_OK)
+
+    ```
+6. urls.py
+   ```
+   from datarepo.views import list_newsfeed
+   
+    urlpatterns = [
+        path('list_newsfeed/', list_newsfeed)
+    ]
+   ```
+7. To check redis connected
+   ```
+   $ redis-cli ping
+   PONG
+   ```
+8. To test redis is working fine..!!
+   ```
+    $ redis-cli
+    127.0.0.1:6379> set test "hello world"
+    127.0.0.1:6379> OK
+    127.0.0.1:6379> get test
+    127.0.0.1:6379> "hello world"
+    ```
+9. To know the cache keys
+    ```
+   $ python3 manage.py shell
+   >>> from django.core.cache import cache
+   >>> cache.keys('*')  # this line gives the list of keys presenet in cache
+
+   ```
+10. To clear the cache
+    ```
+    >>> from django.core.cache import cache
+    >>> cache.clear()
+       True
+    ```
