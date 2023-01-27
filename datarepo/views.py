@@ -26,4 +26,3 @@ def list_newsfeed(request):
         'data': data
     }
     return Response(context, status=status.HTTP_200_OK)
-

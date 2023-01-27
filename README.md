@@ -4,10 +4,9 @@
 ##### packages
 
 1. django
-2. django debug toolbar
-3. django-redis
-4. redis
-5. django rest framework
+2. django-redis
+3. redis
+4. django rest framework
 
 ##### Get started
 
@@ -15,10 +14,7 @@
 2. In settings.py add the following lines.
     1. ```
        Installed_apps = [
-           'debug_toolbar'
-       ]
-       MIDDLEWARE = [
-           'debug_toolbar.middleware.DebugToolbarMiddleware'
+           'rest_framework'
        ]
        ```
     2. Add these cache lines in settings.py

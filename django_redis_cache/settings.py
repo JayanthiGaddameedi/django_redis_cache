@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # custom apps
     'datarepo',
+    'rest_framework',
     'debug_toolbar'
 ]
 
